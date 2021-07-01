@@ -9,7 +9,7 @@ public class HC128 implements StreamCipher {
     private int cnt = 0;
 
     private byte[] key, iv;
-    private boolean initialised;
+    private boolean initialized;
 
     private byte[] buf = new byte[4];
     private int idx = 0;
@@ -74,7 +74,9 @@ public class HC128 implements StreamCipher {
 
     private void init() {
         if (key.length != 16) {
-            throw new IllegalArgumentException("The key must be 128 bits long");
+            byte[] k = new byte[16];
+            System.arraycopy(key, 0, k, 0, Math.min(16, key.length));
+            key = k;
         }
         cnt = 0;
         int[] w = new int[1280];
@@ -136,12 +138,12 @@ public class HC128 implements StreamCipher {
         } else {
             throw new IllegalArgumentException("Invalid parameter passed to HC128 init - " + params.getClass().getName());
         }
-        initialised = true;
+        initialized = true;
     }
 
     @Override
     public void processBytes(byte[] in, int inOff, int len, byte[] out, int outOff) throws DataLengthException {
-        if (!initialised) {
+        if (!initialized) {
             throw new IllegalStateException(getAlgorithmName() + " not initialised");
         }
         if ((inOff + len) > in.length) {
